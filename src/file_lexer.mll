@@ -38,7 +38,8 @@ rule main state = parse
       {
 	if Buffer.length buffer > 0 then
 	  let code = Buffer.contents buffer in
-	    (Expr.LpCode code)::state
+            Buffer.reset buffer;
+            (Expr.LpCode code)::state
 	else
 	  state
       }
