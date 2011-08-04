@@ -4,7 +4,8 @@
 
 %token <string> CHAR
 
-%token VERBATIM
+%token VERBATIM BOLD ITALIC UNDERLINE
+%token <int> SECT
 %token END
 
 %token EOF
@@ -21,7 +22,11 @@ main:
 ;
 
 formatted:
-    VERBATIM string END  { (Expr.Verbatim,$2) }
+    BOLD string END      { (Expr.Bold,$2) }
+  | ITALIC string END    { (Expr.Italic,$2) }
+  | UNDERLINE string END { (Expr.Underline,$2) }
+  | VERBATIM string END  { (Expr.Verbatim,$2) }
+  | SECT string END      { (Expr.Section $1,$2) }
 ;
 
 string:

@@ -6,3 +6,9 @@
 *.cm[oi]
 
 *~
+
+lp
+src/file_lexer.ml
+src/lp_lexer.ml
+src/lp_parser.ml
+src/lp_parser.mli

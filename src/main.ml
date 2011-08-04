@@ -1,3 +1,5 @@
+open Html
+
 let lp_file_string   = ref ""
 let code_file_string = ref ""
 let doc_file_string = ref ""
@@ -32,6 +34,14 @@ let usage =
   ^ "###############################\n\n"
   ^ "Options\n"
 
+let copyright =
+  "Literate programming tool by"
+  ^ " Julien Peeters &lt;contact@julienpeeters.net&gt;"
+
+let split_source in_chan =
+  let lexbuf = Lexing.from_channel in_chan in
+    List.rev (File_lexer.main [] lexbuf)
+
 let dump_code out =
   List.iter
     ( fun item ->
@@ -42,8 +52,8 @@ let dump_code out =
 	  | _ ->
 	      () )
 
-let dump_doc pp items =
-  pp # setup ();
+let dump_doc info pp items =
+  pp # setup info;
   List.iter
     ( fun item ->
 	match item with
@@ -55,7 +65,7 @@ let dump_doc pp items =
 	      let result = Lp_parser.main Lp_lexer.main lexbuf in
 		pp # print_doc result )
     items;
-  pp # teardown ()
+  pp # teardown info
 
 let main () =
   let _ = Arg.parse specs ( fun _ -> () ) usage in
@@ -63,18 +73,22 @@ let main () =
       let _ = if lp_file () = "" then
 	invalid_arg ( "Invalid filename: " ^ ( lp_file () ) )
       in
+
       let input = open_in ( lp_file () ) in
       let code_output = open_out ( code_file () ) in
       let doc_output = open_out ( doc_file () ) in
 
-      let lexbuf = Lexing.from_channel input  in
-      let result = List.rev (File_lexer.main [] lexbuf) in
+      let result = split_source input in
+      let info = { path = lp_file (); comment = copyright } in
       let pp = new Html.pretty_printer doc_output in
+
       let _ = dump_code code_output result in
-      let _ = dump_doc pp result in
+      let _ = dump_doc info pp result in
+
 	close_in input;
 	close_out code_output;
 	close_out doc_output
+
     with
       | Parsing.Parse_error ->
 	  Printf.fprintf stderr "Error: parsing failed !\n";

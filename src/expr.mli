@@ -1,6 +1,10 @@
 type cattr =
     Normal
+  | Bold
+  | Italic
+  | Underline
   | Verbatim
+  | Section of int
 
 type lp =
     LpComment of string
