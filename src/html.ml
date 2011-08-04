@@ -3,10 +3,12 @@ type info_t = {
   comment : string
 }
 
-class pretty_printer out =
+class pretty_printer =
 object
 
-  method setup info =
+  method suffix () = ".html"
+
+  method setup out info =
     Printf.fprintf out "<html>\n";
     Printf.fprintf out "<head>\n";
     Printf.fprintf out
@@ -15,14 +17,14 @@ object
     Printf.fprintf out "</head>\n<body>";
     Printf.fprintf out "<div id=\"header\">File: %s</div>" info.path
 
-  method teardown info =
+  method teardown out info =
     Printf.fprintf out "\n<div id=\"footer\">%s</div>" info.comment;
     Printf.fprintf out "\n</body>\n</html>"
 
-  method print_code txt =
+  method print_code out txt =
     Printf.fprintf out "\n<pre class=\"code\">%s</pre>" txt
 
-  method print_doc items =
+  method print_doc out items =
     Printf.fprintf out "\n<div class=\"doc\">";
     List.iter
       ( fun item ->

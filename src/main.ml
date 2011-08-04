@@ -1,31 +1,11 @@
 open Html
 
-let lp_file_string   = ref ""
-let code_file_string = ref ""
-let doc_file_string = ref ""
-
-let lp_file () = !lp_file_string
-
-let code_file () =
-  if !code_file_string = "" then
-    let filename = lp_file () in
-    let len = String.length filename in
-      String.sub filename 0 ( len - 3 )
-  else
-    !code_file_string
-
-let doc_file () =
-  if !doc_file_string = "" then
-    let filename = lp_file () in
-    let len = String.length filename in
-      ( String.sub filename 0 ( len - 3 ) ) ^ ".html"
-  else
-    !doc_file_string
+let source_dir_string = ref ( Sys.getcwd () )
+let output_dir_string = ref !source_dir_string
 
 let specs = [
-  ( "-f", Arg.Set_string lp_file_string,   "Name of file to parse" ) ;
-  ( "-c", Arg.Set_string code_file_string, "Output code file" ) ;
-  ( "-d", Arg.Set_string doc_file_string,  "Output doc file" )
+  ( "-src", Arg.Set_string source_dir_string, "Name of source dir." ) ;
+  ( "-out", Arg.Set_string output_dir_string, "Name of the output dir." )
 ]
 
 let usage =
@@ -52,42 +32,47 @@ let dump_code out =
 	  | _ ->
 	      () )
 
-let dump_doc info pp items =
-  pp # setup info;
+let dump_doc out pp info items =
+  pp # setup out info;
   List.iter
     ( fun item ->
 	match item with
 	  | Expr.LpCode txt ->
-	      pp # print_code txt
+	      pp # print_code out txt
 
 	  | Expr.LpComment txt ->
 	      let lexbuf = Lexing.from_string txt in
 	      let result = Lp_parser.main Lp_lexer.main lexbuf in
-		pp # print_doc result )
+		pp # print_doc out result )
     items;
-  pp # teardown info
+  pp # teardown out info
+
+let process_file pp path =
+  let code_path = Filename.chop_suffix path ".lp" in
+  let doc_path = code_path ^ ( pp # suffix () ) in
+  let in_chan = open_in path in
+  let code_chan = open_out code_path in
+  let doc_chan = open_out doc_path in
+  let result = split_source in_chan in
+  let info = { path = code_path; comment = copyright } in
+  let _ = dump_code code_chan result in
+  let _ = dump_doc doc_chan pp info result in
+  let _ = close_in in_chan in
+  let _ = close_out code_chan in
+  let _ = close_out doc_chan in
+    ()
+
+let process_files pp path =
+  let _ = if not ( Sys.file_exists path ) then invalid_arg path in
+  let files = Sys.readdir path in
+    Array.iter ( process_file pp ) files
 
 let main () =
   let _ = Arg.parse specs ( fun _ -> () ) usage in
     try
-      let _ = if lp_file () = "" then
-	invalid_arg ( "Invalid filename: " ^ ( lp_file () ) )
-      in
-
-      let input = open_in ( lp_file () ) in
-      let code_output = open_out ( code_file () ) in
-      let doc_output = open_out ( doc_file () ) in
-
-      let result = split_source input in
-      let info = { path = lp_file (); comment = copyright } in
-      let pp = new Html.pretty_printer doc_output in
-
-      let _ = dump_code code_output result in
-      let _ = dump_doc info pp result in
-
-	close_in input;
-	close_out code_output;
-	close_out doc_output
+      let pp = new Html.pretty_printer in
+      let _ = process_files pp !source_dir_string in
+        ()
 
     with
       | Parsing.Parse_error ->
