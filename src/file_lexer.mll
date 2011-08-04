@@ -9,12 +9,12 @@ let blank_nl     = [' ' '\013' '\009' '\012' '\010']
 let not_blank_nl = [^ ' ' '\013' '\009' '\012' '\010']
 
 rule main state = parse
-  | "/*>" blank_nl+ "*/"
+  | blank* "/*>" blank_nl* "*/"
       {
 	main state lexbuf
       }
 
-  | "/*>" blank_nl*
+  | blank* "/*>" blank_nl*
       {
 	let state2 =
 	  if Buffer.length buffer > 0 then begin
@@ -44,7 +44,7 @@ rule main state = parse
       }
 
 and special_comment = parse
-  | "*/" blank_nl+
+  | "*/" nl+
       {
 	let com = Expr.LpComment (Buffer.contents buffer) in
 	  Buffer.reset buffer;
