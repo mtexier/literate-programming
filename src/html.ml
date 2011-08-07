@@ -13,7 +13,7 @@ object
     Printf.fprintf out "<head>\n";
     Printf.fprintf out
       "<link rel=\"stylesheet\" type=\"text/css\" href=\"%s\">\n"
-      "style.css";
+      "../style.css";
     Printf.fprintf out "</head>\n<body>";
     Printf.fprintf out "<div id=\"header\">File: %s</div>" info.path
 

@@ -21,11 +21,12 @@ GENERATED=\
 	src/lp_parser.ml
 
 OFLAGS=-I src
+LFLAGS=unix.cma
 
 TARGET=lp
 
 $(TARGET): $(SOBJECTS)
-	ocamlc $(OFLAGS) -o $@ $^
+	ocamlc $(OFLAGS) -o $@ $(LFLAGS) $^
 
 %.cmi: %.mli
 	ocamlc $(OFLAGS) -c $<
