@@ -1,0 +1,46 @@
+html { 
+  font-family: "Times new Roman";
+  font-size: 12pt;
+}
+
+#header {
+  margin: 0;
+  padding: 15px;
+  font-size: 16pt;
+  font-weight: bold;
+  background-color: #bbe;
+  -webkit-border-radius: 5px;
+  -moz-border-radius: 5px;
+  border-radius: 5px;
+}
+
+#footer {
+  margin: 0;
+  padding: 15px;
+  background-color: #bbe;
+  font-size: 10pt;
+  text-align: right;
+  -webkit-border-radius: 5px;
+  -moz-border-radius: 5px;
+  border-radius: 5px;
+}
+
+.doc {
+  margin: 10px 0;
+  padding: 0 0 0 30px;
+}
+
+.code {
+  margin: 5px 0;
+  padding: 10px;
+  background-color: #eee;
+  font-size: 10pt;
+  -webkit-border-radius: 5px;
+  -moz-border-radius: 5px;
+  border-radius: 5px;
+}
+
+.verbatim {
+  font-family: "Courier";
+  font-size: 11pt;
+}
