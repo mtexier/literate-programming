@@ -1,10 +1,12 @@
 type info_t = {
-  path    : string ;
-  comment : string
+  i_root : string ;
+  i_out  : string ;
+  i_path : string list;
+  i_foot : string
 }
 
 class pretty_printer =
-object
+object (self)
 
   method suffix () = ".html"
 
@@ -15,16 +17,24 @@ object
       "<link rel=\"stylesheet\" type=\"text/css\" href=\"%s\">\n"
       "../style.css";
     Printf.fprintf out "</head>\n<body>";
-    Printf.fprintf out "<div id=\"header\">File: %s</div>" info.path
+    Printf.fprintf out "<div id=\"header\">File: %s " info.i_root;
+    List.iter
+      ( fun item ->
+          Printf.fprintf out
+	    "&gt; <a href=\"%s\">%s</a>"
+	    ( item ^ self # suffix () )
+            item )
+      ( List.rev info.i_path );
+    Printf.fprintf out "</div>"
 
   method teardown out info =
-    Printf.fprintf out "\n<div id=\"footer\">%s</div>" info.comment;
+    Printf.fprintf out "\n<div id=\"footer\">%s</div>" info.i_foot;
     Printf.fprintf out "\n</body>\n</html>"
 
-  method print_code out txt =
+  method code out txt =
     Printf.fprintf out "\n<pre class=\"code\">%s</pre>" txt
 
-  method print_doc out items =
+  method doc out items =
     Printf.fprintf out "\n<div class=\"doc\">";
     List.iter
       ( fun item ->

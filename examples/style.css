@@ -1,5 +1,5 @@
 html { 
-  font-family: "Times new Roman";
+  font-family: Helvetica, Arial, sans-serif;
   font-size: 12pt;
 }
 
@@ -34,6 +34,7 @@ html {
   margin: 5px 0;
   padding: 10px;
   background-color: #eee;
+  font-family: monospace;
   font-size: 10pt;
   -webkit-border-radius: 5px;
   -moz-border-radius: 5px;
@@ -41,6 +42,6 @@ html {
 }
 
 .verbatim {
-  font-family: "Courier";
+  font-family: monospace;
   font-size: 11pt;
 }
