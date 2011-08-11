@@ -22,8 +22,8 @@
 
 open Html
 
-let source_dir_string = ref ( Sys.getcwd () )
-let output_dir_string = ref !source_dir_string
+let source_dir_string = ref ""
+let output_dir_string = ref ( Sys.getcwd () )
 
 let specs = [
   ( "-src", Arg.Set_string source_dir_string, "Name of source dir." ) ;
@@ -44,16 +44,6 @@ let split_source in_chan =
   let lexbuf = Lexing.from_channel in_chan in
     List.rev (File_lexer.main [] lexbuf)
 
-(* let dump_code out = *)
-(*   List.iter *)
-(*     ( fun item -> *)
-(* 	match item with *)
-(* 	  | Expr.LpCode txt -> *)
-(* 	      Printf.fprintf out "%s" txt *)
-
-(* 	  | _ -> *)
-(* 	      () ) *)
-
 let dump out pp info items =
   pp # setup out info;
   List.iter
@@ -69,11 +59,11 @@ let dump out pp info items =
     items;
   pp # teardown out info
 
-let make_path paths file =
-  List.fold_left
-    ( fun state sub -> Filename.concat sub state )
-    file
-    paths
+let abs_path path =
+  if Filename.is_relative path then
+    Filename.concat ( Sys.getcwd () ) path
+  else
+    path
 
 let process_file pp path_list =
   let source_path =
@@ -94,10 +84,10 @@ let process_file pp path_list =
   let doc_chan = open_out doc_path2 in
 
   let result = split_source in_chan in
-  let info = { i_root = !source_dir_string;
-	       i_out  = !output_dir_string;
-	       i_path = path_list;
-	       i_foot = copyright } in
+  let info = { i_root = abs_path !source_dir_string;
+               i_out  = abs_path !output_dir_string;
+               i_path = path_list;
+               i_foot = copyright } in
   let _ = dump doc_chan pp info result in
 
   let _ = close_in in_chan in
@@ -110,19 +100,6 @@ let check_ext path =
     false
     [ ".cc"; ".c++"; ".C"; ".cpp" ]
 
-(* let create_if_not_exists base paths = *)
-(*   if not ( Sys.file_exists base ) then Unix.mkdir base 0o755; *)
-(*   let _ = *)
-(*     List.fold_right *)
-(*       ( fun item state -> *)
-(*           let state2 = Filename.concat state item in *)
-(*             if not ( Sys.file_exists state2 ) then Unix.mkdir state2 0o755; *)
-(* 	    state2 ) *)
-(*       paths *)
-(*       base *)
-(*   in *)
-(*     () *)
-
 let walk f path =
   let rec walk_rec paths =
     let path_str =
@@ -131,44 +108,13 @@ let walk f path =
 	paths
 	path
     in
-    let entries = Sys.readdir path_str in
-    let files,dirs =
-      Array.fold_left
-	( fun state file ->
-            if Sys.is_directory ( Filename.concat path_str file ) then
-              (fst state,file :: ( snd state ))
-	    else
-	      (file :: ( fst state ),snd state) )
-	([],[])
-	entries
-    in
+    let files,dirs,_ = Dir.list path_str in
     let process f entry = f ( entry :: paths ) in
     let _ = List.iter ( process f ) files in
     let _ = List.iter ( process walk_rec ) dirs in
       ()
   in
   walk_rec []
-
-(* let rec process_files pp ctxt = *)
-(*   let _ = *)
-(*     if not ( Sys.file_exists ctxt.c_root ) then *)
-(*       invalid_arg ctxt.c_root *)
-(*   in *)
-(*   let files = Sys.readdir ctxt.c_root in *)
-(*     let _ = create_if_not_exists ctxt.c_dst ctxt.c_paths in *)
-(*     Array.iter *)
-(*       ( fun file -> *)
-(* 	  if ( Sys.is_directory file ) then *)
-(* 	    let ctxt2 = *)
-(* 	      { ctxt with c_root = ( Filename.concat ctxt.c_root file ) ; *)
-(*                           c_paths = file :: ctxt.c_paths } *)
-(* 	    in *)
-(* 	      process_files pp ctxt2 *)
-(* 	  else *)
-(* 	    if check_ext file then  *)
-(* 	      let ctxt2 = { ctxt with c_file = file  } in *)
-(* 	        process_file pp ctxt2 ) *)
-(*       files *)
 
 let rec make_dirs list base =
   match list with
@@ -186,6 +132,9 @@ let rec make_dirs list base =
 let main () =
   let _ = Arg.parse specs ( fun _ -> () ) usage in
     try
+      if !source_dir_string = "" then
+	Arg.usage specs ( "\nerror: missing source directory\n" ^ usage );
+
       if not ( Sys.file_exists !source_dir_string ) then
 	invalid_arg !source_dir_string;
       if not ( Sys.file_exists !output_dir_string ) then

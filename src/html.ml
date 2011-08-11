@@ -37,7 +37,7 @@ object (self)
     Printf.fprintf out "<head>\n";
     Printf.fprintf out
       "<link rel=\"stylesheet\" type=\"text/css\" href=\"%s\">\n"
-      "../style.css";
+      ( info.i_out ^ "/style.css" );
     Printf.fprintf out "</head>\n<body>";
     Printf.fprintf out "<div id=\"header\">File: %s " info.i_root;
     List.iter

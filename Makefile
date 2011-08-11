@@ -21,6 +21,7 @@ SOURCES=\
 	src/file_lexer.ml \
 	src/lp_parser.ml \
 	src/lp_lexer.ml \
+	src/dir.ml \
 	src/debug.ml \
 	src/html.ml \
 	src/main.ml
@@ -39,6 +40,8 @@ OFLAGS=-I src
 LFLAGS=unix.cma
 
 TARGET=lp
+
+all: $(TARGET)
 
 $(TARGET): $(SOBJECTS)
 	ocamlc $(OFLAGS) -o $@ $(LFLAGS) $^
