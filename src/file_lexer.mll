@@ -1,3 +1,4 @@
+{
 (*
  * Copyright 2011 (c) Julien Peeters <contact@julienpeeters.net>
  *
@@ -20,7 +21,6 @@
  *   Julien Peeters <contact@julienpeeters.net>
  *)
 
-{
   let buffer = Buffer.create 32
 }
 
