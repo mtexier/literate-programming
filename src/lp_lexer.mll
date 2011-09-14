@@ -32,6 +32,7 @@ let verbatim_begin = "tt{"
 let bold_begin     = "b{"
 let italic_begin   = "i{"
 let underl_begin   = "u{"
+let link_begin     = "l"
 
 let sect_begin    = "s"
 
@@ -57,6 +58,7 @@ rule main = parse
   | underl_begin   { UNDERLINE }
 
   | sect_begin ( digit as level ) "{" { SECT ( int_of_string level ) }
+  | link_begin ( digit as level ) "{" { LINK ( int_of_string level ) }
 
   | cweb_code_section_begin  { CWEB_CODE_SECTION }
   | cweb_code_section_end { CWEB_CODE_SECTION_END }

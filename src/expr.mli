@@ -26,6 +26,7 @@ type cattr =
   | Italic
   | Underline
   | Verbatim
+  | Link of int
   | Section of int
   | CWSection
 

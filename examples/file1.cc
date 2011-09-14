@@ -14,3 +14,5 @@ int f ( int a, int b )
     /*> Return the sum of tt{a} and tt{b} */
     return a + b;
 }
+
+/*> test link l1{sfkj} */

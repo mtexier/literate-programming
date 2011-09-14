@@ -30,6 +30,7 @@
 %token CWEB_SECTION 
 %token CWEB_CODE_SECTION CWEB_CODE_SECTION_END CWEB_CODE_SECTION_END_DECL
 %token <int> SECT
+%token <int> LINK
 %token END
 
 %token EOF
