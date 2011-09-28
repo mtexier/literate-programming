@@ -78,7 +78,17 @@ object (self)
 
 	    | Expr.Section lvl, txt ->
 	        let lvl2 = min lvl 3 in
-		  Printf.fprintf out "<h%d>%s</h%d>" lvl2 txt lvl2 )
+		Printf.fprintf out "<h%d id=\"%d\">%s</h%d>" lvl2 lvl2 txt lvl2
+		  
+            | Expr.Link lvl, txt ->
+  	        let lvl2 = min lvl 3 in
+		Printf.fprintf out "<a href=\"#%d\">%s</a>" lvl2 txt
+
+	    | Expr.CWSection, txt ->
+	        Printf.fprintf out " CWS %s CWS " txt
+)
+		
+      
       items;
     Printf.fprintf out "</div>"
 

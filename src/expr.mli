@@ -27,6 +27,7 @@ type cattr =
   | Underline
   | Verbatim
   | Section of int
+  | CWSection
 
 type lp =
     LpComment of string

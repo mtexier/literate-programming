@@ -21,6 +21,7 @@
  *)
 
 open Html
+open Debug
 
 let source_dir_string = ref ""
 let output_dir_string = ref ( Sys.getcwd () )

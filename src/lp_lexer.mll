@@ -26,12 +26,27 @@
 
 let digit = ['0'-'9']+
 
+let blkl = "^\n" 
+    
 let verbatim_begin = "tt{"
 let bold_begin     = "b{"
 let italic_begin   = "i{"
 let underl_begin   = "u{"
 
 let sect_begin    = "s"
+
+(* CWEB Rules *)
+let cweb_section = "@*"
+let cweb_section1 = "@ "
+let cweb_code_section_begin = "@<"
+let cweb_code_section_end = ">@"
+let cweb_code_section_end_decl = ">@="
+let cweb_verbatim = "|"
+let cweb_macro = "@d"
+let cweb_arobase = "@@"
+let cweb_format_short = "@f"
+let cweb_format_long = "@s"
+
 
 let end = "}"
 
@@ -43,11 +58,17 @@ rule main = parse
 
   | sect_begin ( digit as level ) "{" { SECT ( int_of_string level ) }
 
+  | cweb_code_section_begin  { CWEB_CODE_SECTION }
+  | cweb_code_section_end { CWEB_CODE_SECTION_END }
+  | cweb_code_section_end_decl { CWEB_CODE_SECTION_END_DECL }
+
   | end            { END }
 
   | _              { CHAR (Lexing.lexeme lexbuf) }
 
   | eof            { EOF }
+
+  | blkl            { EOL }
 
 {
 }
